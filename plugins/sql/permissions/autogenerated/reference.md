@@ -130,4 +130,30 @@ Denies the select command without any pre-configured scope.
 
 </td>
 </tr>
+
+<tr>
+<td>
+
+`sql:allow-transaction-execute`
+
+</td>
+<td>
+
+Enables the transaction_execute command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`sql:deny-transaction-execute`
+
+</td>
+<td>
+
+Denies the transaction_execute command without any pre-configured scope.
+
+</td>
+</tr>
 </table>

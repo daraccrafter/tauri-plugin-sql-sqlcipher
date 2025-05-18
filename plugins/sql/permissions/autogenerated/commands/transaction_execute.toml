@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-transaction-execute"
+description = "Enables the transaction_execute command without any pre-configured scope."
+commands.allow = ["transaction_execute"]
+
+[[permission]]
+identifier = "deny-transaction-execute"
+description = "Denies the transaction_execute command without any pre-configured scope."
+commands.deny = ["transaction_execute"]

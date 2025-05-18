@@ -343,6 +343,18 @@
           "markdownDescription": "Denies the select command without any pre-configured scope."
         },
         {
+          "description": "Enables the transaction_execute command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-transaction-execute",
+          "markdownDescription": "Enables the transaction_execute command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the transaction_execute command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-transaction-execute",
+          "markdownDescription": "Denies the transaction_execute command without any pre-configured scope."
+        },
+        {
           "description": "### Default Permissions\n\nThis permission set configures what kind of\ndatabase operations are available from the sql plugin.\n\n### Granted Permissions\n\nAll reading related operations are enabled.\nAlso allows to load or close a connection.\n\n\n#### This default permission set includes:\n\n- `allow-close`\n- `allow-load`\n- `allow-select`",
           "type": "string",
           "const": "default",
