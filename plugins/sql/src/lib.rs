@@ -115,6 +115,7 @@ fn run_async_command<F: std::future::Future>(cmd: F) -> F::Output {
 #[derive(Default)]
 pub struct Builder {
     migrations: Option<HashMap<String, MigrationList>>,
+    encryption_key: Option<String>,
 }
 
 impl Builder {
@@ -133,6 +134,11 @@ impl Builder {
             .insert(db_url.to_string(), MigrationList(migrations));
         self
     }
+    pub fn set_encryption_key(mut self, key: String) -> Self {
+        self.encryption_key = Some(key);
+        self
+    }
+
 
     pub fn build<R: Runtime>(mut self) -> TauriPlugin<R, Option<PluginConfig>> {
         PluginBuilder::<R, Option<PluginConfig>>::new("sql")
@@ -150,7 +156,7 @@ impl Builder {
                     let mut lock = instances.0.write().await;
 
                     for db in config.preload {
-                        let pool = DbPool::connect(&db, app).await?;
+                        let pool = DbPool::connect(&db, app, self.encryption_key.clone()).await?;
 
                         if let Some(migrations) =
                             self.migrations.as_mut().and_then(|mm| mm.remove(&db))

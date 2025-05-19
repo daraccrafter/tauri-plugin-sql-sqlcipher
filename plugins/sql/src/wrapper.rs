@@ -19,6 +19,7 @@ use sqlx::MySql;
 use sqlx::Postgres;
 #[cfg(feature = "sqlite")]
 use sqlx::Sqlite;
+use sqlx::ConnectOptions;
 
 use crate::LastInsertId;
 
@@ -68,6 +69,7 @@ impl DbPool {
     pub(crate) async fn connect<R: Runtime>(
         conn_url: &str,
         _app: &AppHandle<R>,
+        encryption_key: Option<String>,
     ) -> Result<Self, crate::Error> {
         match conn_url
             .split_once(':')
@@ -86,9 +88,30 @@ impl DbPool {
                 let conn_url = &path_mapper(app_path, conn_url);
 
                 if !Sqlite::database_exists(conn_url).await.unwrap_or(false) {
-                    Sqlite::create_database(conn_url).await?;
+                    if let Some(key) = encryption_key {
+                        let _ = SqliteConnectOptions::from_str(conn_url)?
+                            .pragma("key", key)
+                            .create_if_missing(true)
+                            .connect()
+                            .await?;
+                    } else {
+                        Sqlite::create_database(conn_url).await?;
+                    }
                 }
-                Ok(Self::Sqlite(Pool::connect(conn_url).await?))
+
+                // For the pool connection with encryption
+                let pool = if let Some(key) = encryption_key {
+                    SqlitePoolOptions::new()
+                        .connect_with(
+                            SqliteConnectOptions::from_str(conn_url)?
+                                .pragma("key", key)
+                        )
+                        .await?
+                } else {
+                    SqlitePool::connect(conn_url).await?
+                };
+
+                Ok(Self::Sqlite(pool))
             }
             #[cfg(feature = "mysql")]
             "mysql" => {
