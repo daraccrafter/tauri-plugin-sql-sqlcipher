@@ -38,7 +38,7 @@ sqlx = { version = "0.8", features = ["json", "time","sqlite"] }
 time = "0.3"
 tokio = { version = "1", features = ["sync"] }
 indexmap = { version = "2", features = ["serde"] }
-libsqlite3-sys = { version = *", features = [
+libsqlite3-sys = { version = "*", features = [
     "bundled-sqlcipher"
 ] }
 [features]
