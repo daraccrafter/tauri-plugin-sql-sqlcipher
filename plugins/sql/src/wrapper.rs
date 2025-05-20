@@ -21,6 +21,7 @@ use sqlx::Postgres;
 use sqlx::Sqlite;
 use sqlx::{pool::PoolOptions, ConnectOptions, Connection};
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
+use std::str::FromStr;
 
 use crate::LastInsertId;
 
