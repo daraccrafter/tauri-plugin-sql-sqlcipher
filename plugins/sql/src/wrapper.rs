@@ -90,7 +90,7 @@ impl DbPool {
                 let conn_url = &path_mapper(app_path, conn_url);
 
                 if !Sqlite::database_exists(conn_url).await.unwrap_or(false) {
-                    if let Some(ref key) = encryption_key {
+                    if let Some(ref key) = encryption_key.clone() {
                         let _ = SqliteConnectOptions::from_str(conn_url)?
                             .pragma("key", key)
                             .create_if_missing(true)
