@@ -24,7 +24,9 @@ ios = { level = "full", notes = "" }
 [build-dependencies]
 tauri-plugin = { workspace = true, features = ["build"] }
 sqlx = { version = "0.8", features = ["json", "time","sqlite"] }
-
+libsqlite3-sys = { version = *", features = [
+    "bundled-sqlcipher"
+] }
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -36,7 +38,9 @@ sqlx = { version = "0.8", features = ["json", "time","sqlite"] }
 time = "0.3"
 tokio = { version = "1", features = ["sync"] }
 indexmap = { version = "2", features = ["serde"] }
-
+libsqlite3-sys = { version = *", features = [
+    "bundled-sqlcipher"
+] }
 [features]
 sqlite = ["sqlx/sqlite", "sqlx/runtime-tokio"]
 mysql = ["sqlx/mysql", "sqlx/runtime-tokio-rustls"]
