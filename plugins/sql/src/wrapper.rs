@@ -102,7 +102,7 @@ impl DbPool {
                 }
 
                 // For the pool connection with encryption
-                let pool = if let Some(key) = encryption_key {
+                let pool = if let Some(key) = encryption_key.as_ref() {
                     SqlitePoolOptions::new()
                         .connect_with(
                             SqliteConnectOptions::from_str(conn_url)?
