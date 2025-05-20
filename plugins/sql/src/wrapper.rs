@@ -116,7 +116,7 @@ let pool = if let Some(key) = &ec_key {
         .fetch_one(&mut *conn)
         .await;
     
-    if test.is_error() {
+    if test.is_err() {
         eprintln!("Failed to verify encrypted connection");
     }else{
         eprintln!("Encrypted connection verified");
