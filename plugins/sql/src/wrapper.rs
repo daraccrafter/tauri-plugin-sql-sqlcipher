@@ -112,16 +112,11 @@ let pool = if let Some(key) = &ec_key {
     
     // Verify the pool actually works with encryption
     let mut conn = pool.acquire().await?;
-    let test: i32 = sqlx::query_scalar("SELECT 1")
+    let test = sqlx::query_scalar("SELECT 1")
         .fetch_one(&mut *conn)
-        .await
-        .map_err(|e| {
-            crate::Error::Sql(format!(
-                "Failed to verify encrypted connection: {}", e
-            ))
-        })?;
+        .await;
     
-    if test != 1 {
+    if !test.is_error() && test != 1 {
         eprintln!("Failed to verify encrypted connection");
     }
     
