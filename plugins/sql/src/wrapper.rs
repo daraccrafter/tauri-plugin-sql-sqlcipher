@@ -19,7 +19,8 @@ use sqlx::MySql;
 use sqlx::Postgres;
 #[cfg(feature = "sqlite")]
 use sqlx::Sqlite;
-use sqlx::{pool::PoolOptions, SqliteConnectOptions, SqlitePoolOptions};
+use sqlx::{pool::PoolOptions, ConnectOptions, Connection};
+use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
 
 use crate::LastInsertId;
 
@@ -101,9 +102,9 @@ impl DbPool {
 
                 // For the pool connection with encryption
                 let pool = if let Some(key) = encryption_key {
-                    PoolOptions::new()
+                    SqlitePoolOptions::new()
                         .connect_with(
-                            ConnectOptions::from_str(conn_url)?
+                            SqliteConnectOptions::from_str(conn_url)?
                                 .pragma("key", key)
                         )
                         .await?

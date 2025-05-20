@@ -23,7 +23,7 @@ ios = { level = "full", notes = "" }
 
 [build-dependencies]
 tauri-plugin = { workspace = true, features = ["build"] }
-sqlx = { version = "0.8", features = ["json", "time"] }
+sqlx = { version = "0.8", features = ["json", "time","sqlite"] }
 
 [dependencies]
 serde = { workspace = true }
@@ -32,7 +32,7 @@ tauri = { workspace = true }
 log = { workspace = true }
 thiserror = { workspace = true }
 futures-core = "0.3"
-sqlx = { version = "0.8", features = ["json", "time"] }
+sqlx = { version = "0.8", features = ["json", "time","sqlite"] }
 time = "0.3"
 tokio = { version = "1", features = ["sync"] }
 indexmap = { version = "2", features = ["serde"] }
