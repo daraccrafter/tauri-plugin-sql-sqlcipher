@@ -103,26 +103,25 @@ impl DbPool {
 
                 // For the pool connection with encryption
 let pool = if let Some(key) = &ec_key {
-    let pool = SqlitePoolOptions::new()
-        .connect_with(
-            SqliteConnectOptions::from_str(conn_url)?
-                .pragma("key", key.to_owned())
-        )
-        .await?;
-    
-    // Verify the pool actually works with encryption
-    let mut conn = pool.acquire().await?;
-    let test = sqlx::query_scalar("SELECT 1")
-        .fetch_one(&mut *conn)
-        .await;
-    
-    if test.is_err() {
-        eprintln!("Failed to verify encrypted connection");
-    }else{
-        eprintln!("Encrypted connection verified");
-    }
-    
-    pool
+let pool = SqlitePoolOptions::new()
+    .connect_with(
+        SqliteConnectOptions::from_str(conn_url)?
+            .pragma("key", key.to_owned())
+    )
+    .await?;
+
+// Verify the pool actually works with encryption
+let mut conn = pool.acquire().await?;
+let test: Result<i32, _> = sqlx::query_scalar("SELECT 1")
+    .fetch_one(&mut *conn)
+    .await;
+
+if test.is_err() {
+    eprintln!("Failed to verify encrypted connection");
+} else {
+    eprintln!("Encrypted connection verified");
+}
+pool
 } else {
     Pool::connect(conn_url).await?
 };
