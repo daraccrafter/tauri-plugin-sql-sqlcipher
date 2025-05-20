@@ -92,7 +92,7 @@ impl DbPool {
                 if !Sqlite::database_exists(conn_url).await.unwrap_or(false) {
                     if let Some(key) = &ec_key {
                         let _ = SqliteConnectOptions::from_str(conn_url)?
-                            .pragma("key", key.to_owned())
+                            .pragma("rekey", key.to_owned())
                             .create_if_missing(true)
                             .connect()
                             .await?;
@@ -106,7 +106,7 @@ impl DbPool {
                     SqlitePoolOptions::new()
                         .connect_with(
                             SqliteConnectOptions::from_str(conn_url)?
-                                .pragma("key", key.to_owned())
+                                .pragma("rekey", key.to_owned())
                         )
                         .await?
                 } else {
