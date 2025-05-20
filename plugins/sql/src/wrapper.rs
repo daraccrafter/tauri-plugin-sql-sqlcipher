@@ -116,7 +116,7 @@ let pool = if let Some(key) = &ec_key {
         .fetch_one(&mut *conn)
         .await
         .map_err(|e| {
-            crate::Error(format!(
+            crate::Error::Sql(format!(
                 "Failed to verify encrypted connection: {}", e
             ))
         })?;
