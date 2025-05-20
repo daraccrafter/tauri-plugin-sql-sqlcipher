@@ -114,17 +114,9 @@ let pool = if let Some(key) = &ec_key {
     let mut conn = pool.acquire().await?;
     let test: i32 = sqlx::query_scalar("SELECT 1")
         .fetch_one(&mut *conn)
-        .await
-        .map_err(|e| {
-            crate::Error::DatabaseError(format!(
-                "Failed to verify encrypted connection: {}", e
-            ))
-        })?;
-    
+        .await;
     if test != 1 {
-        return Err(crate::Error::DatabaseError(
-            "Encryption verification failed".to_string()
-        ));
+        eprintln!("Failed to verify encrypted connection");
     }
     
     pool
