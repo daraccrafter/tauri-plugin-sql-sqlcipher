@@ -19,7 +19,7 @@ use sqlx::MySql;
 use sqlx::Postgres;
 #[cfg(feature = "sqlite")]
 use sqlx::Sqlite;
-use sqlx::{pool::PoolOptions, ConnectOptions};
+use sqlx::{pool::PoolOptions, SqliteConnectOptions, SqlitePoolOptions};
 
 use crate::LastInsertId;
 
@@ -89,7 +89,7 @@ impl DbPool {
 
                 if !Sqlite::database_exists(conn_url).await.unwrap_or(false) {
                     if let Some(key) = encryption_key {
-                        let _ = ConnectOptions::from_str(conn_url)?
+                        let _ = SqliteConnectOptions::from_str(conn_url)?
                             .pragma("key", key)
                             .create_if_missing(true)
                             .connect()
