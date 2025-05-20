@@ -88,11 +88,11 @@ impl DbPool {
                 create_dir_all(&app_path).expect("Couldn't create app config dir");
 
                 let conn_url = &path_mapper(app_path, conn_url);
-
+                let ec_key = encryption_key.clone();
                 if !Sqlite::database_exists(conn_url).await.unwrap_or(false) {
-                    if let Some(ref key) = encryption_key.clone() {
+                    if let Some(key) = &ec_key {
                         let _ = SqliteConnectOptions::from_str(conn_url)?
-                            .pragma("key", key)
+                            .pragma("key", key.as_str())
                             .create_if_missing(true)
                             .connect()
                             .await?;
@@ -102,11 +102,11 @@ impl DbPool {
                 }
 
                 // For the pool connection with encryption
-                let pool = if let Some(ref key) = encryption_key {
+                let pool = if let Some(key) =  &ec_key {
                     SqlitePoolOptions::new()
                         .connect_with(
                             SqliteConnectOptions::from_str(conn_url)?
-                                .pragma("key", key)
+                                .pragma("key", key.as_str())
                         )
                         .await?
                 } else {
