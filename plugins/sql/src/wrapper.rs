@@ -102,16 +102,35 @@ impl DbPool {
                 }
 
                 // For the pool connection with encryption
-                let pool = if let Some(key) =  &ec_key {
-                    SqlitePoolOptions::new()
-                        .connect_with(
-                            SqliteConnectOptions::from_str(conn_url)?
-                                .pragma("key", key.to_owned())
-                        )
-                        .await?
-                } else {
-                    Pool::connect(conn_url).await?
-                };
+let pool = if let Some(key) = &ec_key {
+    let pool = SqlitePoolOptions::new()
+        .connect_with(
+            SqliteConnectOptions::from_str(conn_url)?
+                .pragma("key", key.to_owned())
+        )
+        .await?;
+    
+    // Verify the pool actually works with encryption
+    let mut conn = pool.acquire().await?;
+    let test: i32 = sqlx::query_scalar("SELECT 1")
+        .fetch_one(&mut *conn)
+        .await
+        .map_err(|e| {
+            crate::Error::DatabaseError(format!(
+                "Failed to verify encrypted connection: {}", e
+            ))
+        })?;
+    
+    if test != 1 {
+        return Err(crate::Error::DatabaseError(
+            "Encryption verification failed".to_string()
+        ));
+    }
+    
+    pool
+} else {
+    Pool::connect(conn_url).await?
+};
 
                 Ok(Self::Sqlite(pool))
             }
