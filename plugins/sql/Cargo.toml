@@ -25,7 +25,7 @@ ios = { level = "full", notes = "" }
 tauri-plugin = { workspace = true, features = ["build"] }
 sqlx = { version = "0.8", features = ["json", "time","sqlite"] }
 libsqlite3-sys = { version = "*", features = [
-    "bundled-sqlcipher"
+    "bundled-sqlcipher-vendored-openssl"
 ] }
 [dependencies]
 serde = { workspace = true }

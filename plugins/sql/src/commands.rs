@@ -7,17 +7,18 @@ use serde_json::Value as JsonValue;
 use sqlx::migrate::Migrator;
 use tauri::{command, AppHandle, Runtime, State};
 
-use crate::{DbInstances, DbPool, Error, LastInsertId, Migrations};
+use crate::{DbInstances, DbPool, EncryptionKey, Error, LastInsertId, Migrations};
 
 #[command]
 pub(crate) async fn load<R: Runtime>(
     app: AppHandle<R>,
     db_instances: State<'_, DbInstances>,
     migrations: State<'_, Migrations>,
+    encryption_key: State<'_, EncryptionKey>,
     db: String,
-    encryption_key: Option<String>,
 ) -> Result<String, crate::Error> {
-    let pool = DbPool::connect(&db, &app,encryption_key).await?;
+    let key = encryption_key.key.clone();
+    let pool = DbPool::connect(&db, &app,key).await?;
 
     if let Some(migrations) = migrations.0.lock().await.remove(&db) {
         let migrator = Migrator::new(migrations).await?;

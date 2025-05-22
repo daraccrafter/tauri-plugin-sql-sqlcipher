@@ -118,6 +118,10 @@ pub struct Builder {
     encryption_key: Option<String>,
 }
 
+pub struct EncryptionKey{
+    pub key: Option<String>,
+}
+
 impl Builder {
     pub fn new() -> Self {
         #[cfg(not(any(feature = "sqlite", feature = "mysql", feature = "postgres")))]
@@ -153,6 +157,9 @@ impl Builder {
 
                 run_async_command(async move {
                     let instances = DbInstances::default();
+                    let ECKey = EncryptionKey {
+                        key: self.encryption_key.clone(),
+                    };
                     let mut lock = instances.0.write().await;
 
                     for db in config.preload {
@@ -170,6 +177,7 @@ impl Builder {
                     drop(lock);
 
                     app.manage(instances);
+                    app.manage(ECKey);
                     app.manage(Migrations(Mutex::new(
                         self.migrations.take().unwrap_or_default(),
                     )));

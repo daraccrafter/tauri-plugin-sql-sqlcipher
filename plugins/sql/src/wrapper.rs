@@ -92,7 +92,7 @@ impl DbPool {
                 if !Sqlite::database_exists(conn_url).await.unwrap_or(false) {
                     if let Some(key) = &ec_key {
                         let _ = SqliteConnectOptions::from_str(conn_url)?
-                            .pragma("key", key.to_owned())
+                            .pragma("key", key.to_owned()).pragma("journal_mode", "WAL").pragma("busy_timeout", "10000")
                             .create_if_missing(true)
                             .connect()
                             .await?;
@@ -102,29 +102,16 @@ impl DbPool {
                 }
 
                 // For the pool connection with encryption
-let pool = if let Some(key) = &ec_key {
-let pool = SqlitePoolOptions::new()
-    .connect_with(
-        SqliteConnectOptions::from_str(conn_url)?
-            .pragma("key", key.to_owned())
-    )
-    .await?;
-
-// Verify the pool actually works with encryption
-let mut conn = pool.acquire().await?;
-let test: Result<i32, _> = sqlx::query_scalar("SELECT 1")
-    .fetch_one(&mut *conn)
-    .await;
-
-if test.is_err() {
-    eprintln!("Failed to verify encrypted connection");
-} else {
-    eprintln!("Encrypted connection verified");
-}
-pool
-} else {
-    Pool::connect(conn_url).await?
-};
+                let pool = if let Some(key) =  &ec_key {
+                    SqlitePoolOptions::new()
+                        .connect_with(
+                            SqliteConnectOptions::from_str(conn_url)?
+                                .pragma("key", key.to_owned()).pragma("journal_mode", "WAL").pragma("busy_timeout", "10000")
+                        )
+                        .await?
+                } else {
+                    Pool::connect(conn_url).await?
+                };
 
                 Ok(Self::Sqlite(pool))
             }
